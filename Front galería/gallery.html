@@ -68,6 +68,15 @@
             <button type="submit">Añadir Imagen</button>
         </form>
         
+            <form id="editImageForm" style="display: none;">
+            <input type="hidden" id="edit-id">
+            <input type="text" id="edit-src" name="src" placeholder="URL de la imagen" required>
+            <input type="text" id="edit-alt" name="alt" placeholder="Descripción" required>
+            <input type="text" id="edit-author" name="author" placeholder="Autor" required>
+            <button type="submit">Guardar Cambios</button>
+            <button type="button" onclick="cancelEdit()">Cancelar</button>
+            </form>
+
             <section class="galeria" id="galeria">
                 <div class="columna">
                     <img src="img/1.webp" alt="" data-img-mostrar="0" data-autor="Antonio Berni">
@@ -106,8 +115,8 @@
                 </div>
             </section>
         </div>
-        
-        
+
+        </form>
     </section>
 </body>
 

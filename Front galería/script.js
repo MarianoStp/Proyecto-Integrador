@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let imagenes = [
+    const imageContainer = document.getElementById('galeria');
+    const imgElements = imageContainer.querySelectorAll('div img');
+    const imagenes = Array.from(imgElements).map((img, index) => {
+        return { [`img`]: img.src.replace('http://localhost/gallery/','') };
+    });
+    console.log(imagenes)
+    //const imagenes = JSON.stringify(srcList);
+    //console.log(imagenes);
+    /*let imagenes = [
         { img: 'img/1.webp' },
         { img: 'img/2.webp' },
         { img: 'img/3.webp' },
@@ -25,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { img: 'img/23.webp' },
         { img: 'img/24.webp' },
         { img: 'img/25.webp' },
-    ]
+    ]*/
     let contador = 0;
     const contenedor = document.querySelector('.slideshow')
     const overlay = document.querySelector('.overlay')
@@ -97,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // funciones backend
 document.addEventListener('DOMContentLoaded', function() {
-    //loadImages();
+    loadImages();
 
     document.getElementById('addImageForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -110,24 +118,30 @@ function loadImages() {
         .then(response => response.json())
         .then(data => {
             const galeria = document.getElementById('galeria');
-            galeria.innerHTML = 'galeria';
             data.forEach(image => {
                 const div = document.createElement('div');
+                div.className = "columna";
                 div.innerHTML = `
+                    <img src="${image.src}" alt="${image.alt}">
+                    <button onclick="deleteImage(${image.id})">Eliminar</button>
+                `;
+                /*div.innerHTML = `
                     <img src="${image.src}" alt="${image.alt}">
                     <p>${image.alt}</p>
                     <p>Autor: ${image.author}</p>
                     <button onclick="deleteImage(${image.id})">Eliminar</button>
-                `;
-                galeriaa.appendChild(div);
+                </img>`;*/
+                galeria.appendChild(div);
             });
         });
 }
 function addImage() {
     const formData = new FormData(document.getElementById('addImageForm'));
-    console.log (formData);
+    for (const value of formData.values()) {
+        console.log(value);
+      }
     fetch('crear.php', {
-        method: 'POST',
+        method: 'POST' ,
         body: formData
     }).then(response => {
         if (response.ok) {
@@ -135,6 +149,36 @@ function addImage() {
             document.getElementById('addImageForm').reset();
         }
     });
+}
+
+function editImage(id, src, alt, author) {
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-src').value = src;
+    document.getElementById('edit-alt').value = alt;
+    document.getElementById('edit-author').value = author;
+    document.getElementById('editImageForm').style.display = 'block';
+    document.getElementById('addImageForm').style.display = 'none';
+}
+
+function saveImage() {
+    const formData = new FormData(document.getElementById('editImageForm'));
+    fetch('actualizar.php', {
+        method: 'POST',
+        body: formData
+    }).then(response => {
+        if (response.ok) {
+            loadImages();
+            document.getElementById('editImageForm').reset();
+            document.getElementById('editImageForm').style.display = 'none';
+            document.getElementById('addImageForm').style.display = 'block';
+        }
+    });
+}
+
+function cancelEdit() {
+    document.getElementById('editImageForm').reset();
+    document.getElementById('editImageForm').style.display = 'none';
+    document.getElementById('addImageForm').style.display = 'block';
 }
 
 function deleteImage(id) {
